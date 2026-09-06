@@ -491,6 +491,15 @@ describe('usage command text', () => {
     expect(formatTokenCount(1_234_567)).toBe('1.2M')
   })
 
+  it('scales beyond one billion through two-decimal B and T tiers', () => {
+    expect(formatTokenCount(486_635_710)).toBe('486.6M')
+    expect(formatTokenCount(1_000_000_000)).toBe('1B')
+    expect(formatTokenCount(2_530_000_000)).toBe('2.53B')
+    expect(formatTokenCount(1_000_000_000_000)).toBe('1T')
+    expect(formatTokenCount(1_253_000_000_000)).toBe('1.25T')
+    expect(formatTokenCount(1_250_100_000_000)).toBe('1.25T')
+  })
+
   it('renders home-relative ledger paths symbolically', () => {
     root = root ?? undefined
     const previousHome = process.env.DSH_HOME

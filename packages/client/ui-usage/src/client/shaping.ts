@@ -159,18 +159,23 @@ const SERIES_AXIS_LABELS = 4
  * Compact number form: exact below 1000, one-decimal K/M above, trailing
  * zeros trimmed. Locale-neutral by design, matching the /usage command.
  * @param count - a non-negative count.
- * @returns the display form, e.g. "942", "12.3K", "1.1M".
+ * @returns the display form, e.g. "942", "12.3K", "1.1M", "2.53B", "1.25T".
  */
 export function formatCompactCount(count: number): string {
   if (count < 1000) return String(count)
-  if (count < 1_000_000) return scaledTokenCount(count, 1000) + 'K'
-  return scaledTokenCount(count, 1_000_000) + 'M'
+  if (count < 1_000_000) return scaledTokenCount(count, 1000, 1) + 'K'
+  if (count < 1_000_000_000) return scaledTokenCount(count, 1_000_000, 1) + 'M'
+  if (count < 1_000_000_000_000) return scaledTokenCount(count, 1_000_000_000, 2) + 'B'
+  return scaledTokenCount(count, 1_000_000_000_000, 2) + 'T'
 }
 
-/** One-decimal scaled form with a trailing ".0" trimmed. */
-function scaledTokenCount(count: number, divisor: number): string {
-  const scaled = (count / divisor).toFixed(1)
-  return scaled.endsWith('.0') ? scaled.slice(0, -2) : scaled
+/** Scaled form with trailing zeros trimmed; decimals grow with the scale. */
+function scaledTokenCount(count: number, divisor: number, decimals: number): string {
+  let scaled = (count / divisor).toFixed(decimals)
+  while (scaled.includes('.') && scaled.endsWith('0')) {
+    scaled = scaled.slice(0, -1)
+  }
+  return scaled.endsWith('.') ? scaled.slice(0, -1) : scaled
 }
 
 /**

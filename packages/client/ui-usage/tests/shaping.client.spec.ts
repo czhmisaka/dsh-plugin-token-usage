@@ -99,6 +99,8 @@ describe('formatCompactCount', () => {
     expect(formatCompactCount(999)).toBe('999')
     expect(formatCompactCount(1000)).toBe('1K')
     expect(formatCompactCount(1_234_567)).toBe('1.2M')
+    expect(formatCompactCount(2_530_000_000)).toBe('2.53B')
+    expect(formatCompactCount(1_250_100_000_000)).toBe('1.25T')
   })
 })
 
