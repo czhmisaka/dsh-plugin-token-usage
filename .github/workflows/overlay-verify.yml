@@ -51,7 +51,9 @@ jobs:
           cache-dependency-path: harness/pnpm-lock.yaml
 
       - name: Install workspace dependencies
-        run: pnpm install
+        # The pinned base carries a theme package whose lockfile entries were
+        # never committed; CI implies frozen-lockfile, so opt out explicitly.
+        run: pnpm install --no-frozen-lockfile
 
       - name: Typecheck (host + client faces)
         run: pnpm run typecheck
