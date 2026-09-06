@@ -18,6 +18,11 @@ jobs:
     env:
       HARNESS_REF: 252bd209568b2fe3eb75365fc1d4fac90155a17c
     steps:
+      - name: Check out this repository
+        uses: actions/checkout@v4
+        with:
+          path: plugin
+
       - name: Check out the pinned harness
         uses: actions/checkout@v4
         with:
@@ -27,13 +32,8 @@ jobs:
       - name: Overlay the plugin packages
         run: |
           rm -rf packages/llm/usage-ledger packages/client/ui-usage
-          cp -R "$GITHUB_WORKSPACE/packages/llm/usage-ledger" packages/llm/usage-ledger
-          cp -R "$GITHUB_WORKSPACE/packages/client/ui-usage" packages/client/ui-usage
-
-      - name: Check out this repository (for reference only)
-        uses: actions/checkout@v4
-        with:
-          path: plugin
+          cp -R "${{ github.workspace }}/plugin/packages/llm/usage-ledger" packages/llm/usage-ledger
+          cp -R "${{ github.workspace }}/plugin/packages/client/ui-usage" packages/client/ui-usage
 
       - uses: pnpm/action-setup@v4
         with:
