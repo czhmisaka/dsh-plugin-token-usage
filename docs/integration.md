@@ -85,6 +85,14 @@ pnpm vitest run packages/llm/usage-ledger packages/client/ui-usage
 - 任意会话内 `/usage` 输出全量、今日、最近 24 小时、按模型、按会话汇总
 - 账本落在 `~/.dsh/usage/usage.jsonl`（可用 base bundle 行的 `path` 重定向）
 
+## 配置假设
+
+包内的 `tsconfig.json`（extends `../../../tsconfig.base*.json`、references 指向 vendor 与兄弟包）与 `tsdown.config.ts`（`import { clientBundle } from '../tsdown.client.ts'`）都按 harness 工作区布局编写——放在第 1 步的目标路径上即自动解析，无需改动。这也意味着**本仓库根目录不可独立安装/构建**：仓库刻意不带 `pnpm-workspace.yaml`。
+
+## CI
+
+`.github/workflows/overlay-verify.yml` 在推送/PR 时自动完成第 1–5 步（锁定 harness 提交 + overlay + 聚焦测试），每周一凌晨定时重跑以捕捉 harness 演进带来的破坏；适配新版 harness 后更新其中的 `HARNESS_REF`。
+
 ## 测试基线
 
 本仓库源码在以下状态验证通过：deepseek-harness `usage-dashboard` 分支 `252bd20956`；`pnpm run test:gui`（3928 通过）、两包 vitest（61 通过）、`pnpm run typecheck`（host + client 双面）全绿。

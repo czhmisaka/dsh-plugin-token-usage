@@ -1,9 +1,0 @@
-{
-  "name": "dsh-plugin-token-usage",
-  "private": true,
-  "description": "Token usage statistics plugin for DeepSeek Harness (extracted sources)",
-  "license": "MIT",
-  "scripts": {
-    "note": "build/test inside a deepseek-harness checkout - see docs/integration.md"
-  }
-}

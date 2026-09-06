@@ -1,6 +1,8 @@
-# dsh-plugin-Token 统计
+# dsh-plugin-token-usage
 
 [English](#english) | 中文
+
+[![overlay-verify](https://github.com/czhmisaka/dsh-plugin-token-usage/actions/workflows/overlay-verify.yml/badge.svg)](https://github.com/czhmisaka/dsh-plugin-token-usage/actions/workflows/overlay-verify.yml)
 
 DeepSeek Harness 的 **Token 用量统计插件**——跨会话、实时的整部署 token 计量与可视化面板。本仓库从 [deepseek-harness](https://github.com/deepseek-ai/deepseek-harness) 工作区中抽离了该插件的全部源码，供独立浏览、审阅与集成。
 
@@ -17,11 +19,18 @@ DeepSeek Harness 的 **Token 用量统计插件**——跨会话、实时的整�
 packages/llm/usage-ledger/   主机侧插件（Cordis 服务类 + /usage 命令 + 折叠器）
 packages/client/ui-usage/    浏览器侧插件（设置面板仪表盘 + Shell 气泡）
 docs/integration.md          集成到 deepseek-harness 检出的精确步骤
+.github/workflows/           pinned-overlay CI：锁定 harness 提交验证抽离
 ```
+
+> **注意**：本仓库是源码抽离，**不是可独立安装的包**——不要在本仓库根目录执行 `pnpm install`。包内 tsconfig/tsdown 配置按 harness 工作区布局编写，目录结构即 overlay 目标路径。
 
 ## 使用方式
 
 这两个包是 deepseek-harness 工作区插件，依赖 cordis 运行时、typert 生成器与若干 `@deepseek-ai/dsh-*` 内部包，**在 harness 检出内构建**。步骤见 [docs/integration.md](docs/integration.md)。
+
+## 持续验证
+
+CI 在每次推送时把两个包 overlay 到一个**锁定的 harness 提交**上，跑 61 个聚焦测试与双面 typecheck；每周定时任务捕捉 harness 演进导致的静默破坏。插件适配更新的 harness 后，更新 workflow 里的 `HARNESS_REF` 即可。
 
 本仓库代码提取自 deepseek-harness（MIT）`usage-dashboard` 分支，对应提交 `252bd20956`。在此之上的修改同样以 MIT 发布。
 

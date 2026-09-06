@@ -1,0 +1,54 @@
+name: overlay-verify
+
+# Keeps the extraction honest: overlay the two plugin packages onto a pinned
+# deepseek-harness commit and run their focused suites. Update `HARNESS_REF`
+# when the plugin adopts APIs from a newer harness.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * 1' # weekly: catch harness-side breakage early
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      HARNESS_REF: 252bd209568b2fe3eb75365fc1d4fac90155a17c
+    steps:
+      - name: Check out the pinned harness
+        uses: actions/checkout@v4
+        with:
+          repository: deepseek-ai/deepseek-harness
+          ref: ${{ env.HARNESS_REF }}
+
+      - name: Overlay the plugin packages
+        run: |
+          rm -rf packages/llm/usage-ledger packages/client/ui-usage
+          cp -R "$GITHUB_WORKSPACE/packages/llm/usage-ledger" packages/llm/usage-ledger
+          cp -R "$GITHUB_WORKSPACE/packages/client/ui-usage" packages/client/ui-usage
+
+      - name: Check out this repository (for reference only)
+        uses: actions/checkout@v4
+        with:
+          path: plugin
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install workspace dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Typecheck (host + client faces)
+        run: pnpm run typecheck
+
+      - name: Focused plugin suites
+        run: pnpm vitest run packages/llm/usage-ledger packages/client/ui-usage
